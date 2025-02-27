@@ -13,17 +13,8 @@ app.get('/number/min',(req, res)=>{
 
     const result = getMinNumber(num1, num2);
     res.status(result.status).json(result.data);
-    // if(isNaN(num1) || isNaN(num2)){
-    //    res.json("Both must be numbers")
-    // }else {
-    //     res.json({min: num1 > num2 ? num2 : num1})
-
-    // }
-
-    // res.json({min: Math.min(num1,num2)});
-   
-    // res.json(greeting)
 })
+
 //Max
 app.get('/number/max',(req, res)=>{
 
