@@ -9,7 +9,8 @@ export class InventorysController {
 
     constructor(private inventoryService: InventoryService) {}
     @Post()
-    async create(@Body() createInventoryDto:createInventoryDto): Promise<Inventory>{
+    async create(@Body() createInventoryDto:createInventoryDto): Promise<any>{
+        console.log(createInventoryDto);
         return await this.inventoryService.create(createInventoryDto);
 
     }

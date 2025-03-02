@@ -19,5 +19,5 @@ export class createCustomerDto {
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => CustomerItemDto)
-    Items: CustomerItemDto[];
+    items: CustomerItemDto[];
 }

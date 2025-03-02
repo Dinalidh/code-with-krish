@@ -16,13 +16,13 @@ export class OrdersService {
     ) { }
 
     async create(createOrderDto: createOrderDto): Promise<Order> {
-        console.log()
-        const { customerId, Items } = createOrderDto;
+        console.log(createOrderDto)
+        const { customerId, items } = createOrderDto;
         const order = this.orderRepository.create({ customerId, status: 'PENDING', });
         const savedOrder = await this.orderRepository.save(order);
 
-        console.log('Itemss' ,Items);
-        const orderItems = Items.map((item) =>
+        console.log('Itemss' ,items);
+        const orderItems = items.map((item) =>
             this.orderItemRepository.create({
                 productId: item.productId,
                 price: item.price,

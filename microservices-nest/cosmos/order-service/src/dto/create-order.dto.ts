@@ -16,5 +16,5 @@ export class createOrderDto {
     @IsArray()
     @Type(() => OrderItemDto)
     @ValidateNested({ each: true })
-    Items: OrderItemDto[];
+    items: OrderItemDto[];
 }

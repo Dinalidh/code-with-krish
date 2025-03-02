@@ -16,14 +16,13 @@ export class InventoryService {
     ) {}
 
     async create(createInventoryDto: createInventoryDto): Promise<Inventory> {
-        const { inventoryId, Items } = createInventoryDto;
-
-       
+        console.log(createInventoryDto);
+        const { inventoryId, items } = createInventoryDto;
         const inventory = this.inventoryRepository.create({ inventoryId, status: 'PENDING' });
         const savedInventory = await this.inventoryRepository.save(inventory);
 
-        
-        const inventoryItems = Items.map((item) =>
+        console.log('Itemss' ,items);
+        const inventoryItems = items.map((item) =>
             this.inventoryItemRepository.create({
                 name: item.name,
                 price: item.price,

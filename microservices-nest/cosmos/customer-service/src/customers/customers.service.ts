@@ -16,14 +16,13 @@ export class CustomersService {
     ) {}
 
     async create(createCustomerDto: createCustomerDto): Promise<Customer> {
-        const { customerId, Items } = createCustomerDto;
-
-       
+        console.log(createCustomerDto);
+        const { customerId, items } = createCustomerDto;
         const customer = this.customerRepository.create({ customerId, status: 'PENDING' });
         const savedCustomer = await this.customerRepository.save(customer);
 
-        
-        const customerItems = Items.map((item) =>
+        console.log('Itemss' ,items);
+        const customerItems = items.map((item) =>
             this.customerItemRepository.create({
                 name: item.name,
                 email: item.email,

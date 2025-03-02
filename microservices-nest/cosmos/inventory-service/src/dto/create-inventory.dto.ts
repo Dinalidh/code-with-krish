@@ -19,5 +19,5 @@ export class createInventoryDto {
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => InventoryItemDto)
-    Items: InventoryItemDto[];
+    items: InventoryItemDto[];
 }
