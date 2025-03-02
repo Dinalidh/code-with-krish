@@ -1,27 +1,40 @@
-import React from "react";
-import { CreateProduct } from "../services/product.service";
+import React, { useEffect } from "react";
+import { CreateProduct, GetProducts } from "../services/product.service";
 
 function ProductManagement() {
-  const [Id, setId] = React.useState("");
   const [name, setName] = React.useState("");
   const [price, setPrice] = React.useState("");
   const [quantity, setQuantity] = React.useState("");
+  const [product, setProducts] = React.useState("");
 
   const handleProductSubmit = async (e) => {
     e.preventDefault();
     console.log("Product Addedd successsfully");
     const product = {
-        Id,
-        items: [
-            {
-                name,
-                price,
-                quantity,
-            },
-        ],
+      items: [
+        {
+          name,
+          price,
+          quantity,
+        },
+      ],
     };
     const response = await CreateProduct(product);
     console.log(response.data);
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, [])
+
+  const fetchProducts = async () => {
+    try {
+        const response = await GetProducts();
+        console.log("datapro", response.data);
+        setProducts(response.data);
+    }catch (error) {
+        console.log(error.name)
+    }
 };
 
   return (
@@ -29,15 +42,6 @@ function ProductManagement() {
       <div>
         <h2>Create New Product</h2>
         <form onSubmit={handleProductSubmit}>
-          <label for="id">ID</label>
-          <input
-            type="text"
-            id="id"
-            name="id"
-            value={Id}
-            onChange={(e) => setId(e.target.value)}
-            required
-          />
           <br />
           <label for="name">Name</label>
           <input
@@ -73,6 +77,25 @@ function ProductManagement() {
           <br />
           <input type="submit" value="Submit" Submit />
         </form>
+      </div>
+      <div>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+            { product && 
+                product.map((pro) => (
+                    <tr>
+                        <td>{pro.name}</td>
+                        <td>{pro.price}</td>
+                        <td>{pro.quantity}</td>
+                    </tr>
+                )) }
+        </table>
       </div>
     </>
   );

@@ -7,4 +7,10 @@ const CreateProduct = async (product) => {
     return axios.post(baseUrl, product);
 };
 
-export {CreateProduct};
+const GetProducts = async () => {
+    const result = await axios.get(baseUrl);
+    console.log("pro dataaa"+ result.data);
+    return result;
+}
+
+export {CreateProduct, GetProducts};
