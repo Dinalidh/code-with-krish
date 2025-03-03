@@ -31,7 +31,7 @@ export class OrdersService implements OnModuleInit {
         await this.consumeConfirmOrders();
     }
 
-    async create(createOrderDto: createOrderDto): Promise<Order> {
+    async create(createOrderDto: createOrderDto): Promise<{ order?: Order; message: string }> {
         console.log(createOrderDto)
         const { customerId, items } = createOrderDto;
         //--------customer
@@ -138,7 +138,7 @@ export class OrdersService implements OnModuleInit {
                     messages: [{ value: JSON.stringify({ orderId: savedOrder.id, customerId, customerName }) }]
                 });
 
-                console.log('Published dinali.order.confirmed event';)
+                console.log('Published dinali.order.confirmed event');
             }
         })
 
