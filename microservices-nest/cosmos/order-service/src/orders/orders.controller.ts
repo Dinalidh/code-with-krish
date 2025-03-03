@@ -9,7 +9,7 @@ export class OrdersController {
 
     constructor(private ordersService: OrdersService) {}
     @Post()
-    async create(@Body() createOrderDto:createOrderDto): Promise<any>{
+    async create(@Body() createOrderDto:createOrderDto): Promise<Order>{
 
         console.log(createOrderDto);
         return await this.ordersService.create(createOrderDto);

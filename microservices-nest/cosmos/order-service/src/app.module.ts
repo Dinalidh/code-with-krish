@@ -9,8 +9,8 @@ import { OrderItem } from './entity/order-item.entity';
     type:'mysql',
     host:process.env.HOSTNAME || 'localhost',
     port:3306,
-    username:'root',
-    password: '',
+      username: 'service-user',
+      password: '1234',
     database:'cosmos',
     entities:[Order, OrderItem],
     synchronize: true, //only on dev

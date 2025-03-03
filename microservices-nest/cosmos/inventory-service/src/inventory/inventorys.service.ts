@@ -65,4 +65,5 @@ export class InventoryService {
         inventory.status = updateStatus.status;
         return this.inventoryRepository.save(inventory);
     }
+
 }
