@@ -4,9 +4,12 @@ import { CreateProductDto } from 'src/dto/create-product.dto';
 import { Product } from 'src/entity/product.entity';
 import { Repository } from 'typeorm';
 import { Kafka } from 'kafkajs';
+import { Redis } from 'ioredis';
 
 @Injectable()
 export class ProductsService implements OnModuleInit {
+  private readonly redis = new Redis({host: '3.0.159.213', port:6379 });
+  private readonly Kafka = new Kafka({ brokers: ['3.0.159.213:9092'] });
     private readonly kafka = new Kafka({brokers: ['3.0.159.213:9092']});
     private readonly producer = this.kafka.producer();
     private readonly consumer = this.kafka.consumer({groupId: "inventory-service"});
@@ -88,6 +91,14 @@ export class ProductsService implements OnModuleInit {
             const { customerId, customerName, items} = JSON.parse (
               message.value.toString(),
             );
+            for (const item of items){
+              await this.reduceStock(item.productId, item.quantity);
+              const lockKey =`dinali:product:${item.productId};`;
+              console.log(lockKey);
+    
+              const lock = await this.redis.del(lockKey);
+              console.log("lock deleted======",lock);
+            }
             for (const item of items) {
               await this.reduceStock(item.productId, item.quantity);
             }

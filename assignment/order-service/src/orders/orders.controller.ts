@@ -9,11 +9,9 @@ export class OrdersController {
 
     constructor(private ordersService: OrdersService) {}
     @Post()
-    async create(@Body() createOrderDto:createOrderDto): Promise<{ order?: Order; message: string }>{
-
-        console.log(createOrderDto);
-        return await this.ordersService.create(createOrderDto);
-
+    async create(@Body() createOrderDto: createOrderDto): Promise<Order> {
+      console.log("-----------====================================",createOrderDto);
+      return await this.ordersService.create(createOrderDto);
     }
 
     @Get('/hello')

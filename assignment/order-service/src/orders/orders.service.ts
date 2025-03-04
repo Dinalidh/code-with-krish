@@ -9,9 +9,11 @@ import { lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { Kafka } from 'kafkajs';
 import { log } from 'console';
+import { Redis } from 'ioredis';
 
 @Injectable()
 export class OrdersService implements OnModuleInit {
+    private readonly redis = new Redis({ host: '3.0.159.213', port: 6379 });
     private readonly Kafka = new Kafka({ brokers: ['3.0.159.213:9092'] });
     private readonly producer = this.Kafka.producer();
     private readonly consumer = this.Kafka.consumer({ groupId: "orders-service" });
@@ -31,13 +33,13 @@ export class OrdersService implements OnModuleInit {
         await this.consumeConfirmOrders();
     }
 
-    async create(createOrderDto: createOrderDto): Promise<{ order?: Order; message: string }> {
+    async create(createOrderDto: createOrderDto): Promise<any> {
         console.log(createOrderDto)
         const { customerId, items } = createOrderDto;
         //--------customer
         // Validate customer exists
         let customerName = '';
-    
+
         try {
             const response$ = this.httpService.get(
                 `${this.customerServiceUrl}/${customerId}`,
@@ -48,6 +50,15 @@ export class OrdersService implements OnModuleInit {
             throw new BadRequestException(
                 `Customer ID ${customerId} does not exist.`,
             );
+        }
+
+        //aquare lock
+        for (const item of items) {
+            const lockKey = `dinali:product:${item.productId}:lock`;
+            const lock = await this.redis.set(lockKey, 'locked', 'EX', 3600 + 24, 'NX');
+            if (!lock) {
+                throw new BadRequestException(`product id ${item.productId} is being processed. please try again later`);
+            }
         }
         // produce order as an event
 
@@ -109,7 +120,7 @@ export class OrdersService implements OnModuleInit {
 
     }
     async consumeConfirmOrders() {
-        await this.consumer.subscribe({ topic: 'order.order.create' });
+        await this.consumer.subscribe({ topic: 'dinali.order.order.create' });
         await this.consumer.run({
             eachMessage: async ({ message }) => {
                 const { customerId, customerName, items } = JSON.parse(
