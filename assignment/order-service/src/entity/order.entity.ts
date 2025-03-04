@@ -9,6 +9,8 @@ export class Order {
     @Column()
     customerId:number;
     @CreateDateColumn()
+    city:string;
+    @Column()
     createdAt:Date;
     @Column({default:'PENDING'})
     status: string;

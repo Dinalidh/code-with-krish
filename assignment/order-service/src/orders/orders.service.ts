@@ -35,20 +35,22 @@ export class OrdersService implements OnModuleInit {
 
     async create(createOrderDto: createOrderDto): Promise<any> {
         console.log(createOrderDto)
-        const { customerId, items } = createOrderDto;
+        const { customerId, city, items } = createOrderDto;
         //--------customer
         // Validate customer exists
         let customerName = '';
 
         try {
             const response$ = this.httpService.get(
-                `${this.customerServiceUrl}/${customerId}`,
+                `${this.customerServiceUrl}/${customerId},${city}`,
+                
             );
             const response = await lastValueFrom(response$);
             customerName = response.data.name;
         } catch (error) {
             throw new BadRequestException(
                 `Customer ID ${customerId} does not exist.`,
+                `city ${city} does not exist`
             );
         }
 
@@ -65,7 +67,7 @@ export class OrdersService implements OnModuleInit {
         this.producer.send({
             topic: `dinali.order.create`,
             messages: [
-                { value: JSON.stringify({ customerId, customerName, items }) },
+                { value: JSON.stringify({ customerId, city, customerName, items }) },
             ],
         });
         return { message: `order is placed.waiting inventory service to process` };
@@ -123,7 +125,7 @@ export class OrdersService implements OnModuleInit {
         await this.consumer.subscribe({ topic: 'dinali.order.order.create' });
         await this.consumer.run({
             eachMessage: async ({ message }) => {
-                const { customerId, customerName, items } = JSON.parse(
+                const { customerId, city, customerName, items } = JSON.parse(
                     message.value.toString(),
                 );
                 console.log(items, "Order Recived")
@@ -146,7 +148,7 @@ export class OrdersService implements OnModuleInit {
                 //publish the "dinali.order.confirmed"
                 await this.producer.send({
                     topic: 'dinali.order.confirmed',
-                    messages: [{ value: JSON.stringify({ orderId: savedOrder.id, customerId, customerName }) }]
+                    messages: [{ value: JSON.stringify({ orderId: savedOrder.id, customerId, city, customerName }) }]
                 });
 
                 console.log('Published dinali.order.confirmed event');
